@@ -3,452 +3,910 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport"
-        content="width=device-width, initial-scale=1.0,
-        maximum-scale=1.0, user-scalable=no">
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
   <title>TAC Miner</title>
 
+  <!-- Telegram Mini App -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
+    :root {
+      --bg: #050914;
+      --bg-soft: #091225;
+      --card: #0b1426;
+      --card-2: #0e1930;
+
+      --purple: #9b16ff;
+      --purple-light: #c56cff;
+
+      --cyan: #19cfff;
+      --cyan-light: #72e5ff;
+
+      --green: #18d69e;
+      --red: #ff5b75;
+
+      --text: #f5f7fb;
+      --muted: #8995aa;
+      --border: rgba(65, 139, 210, 0.20);
+
+      --nav-height: 76px;
+    }
+
     * {
       box-sizing: border-box;
       -webkit-tap-highlight-color: transparent;
     }
 
-    :root {
-      --bg: #050a12;
-      --card: #0d1522;
-      --card2: #111b2c;
-      --border: #1b304a;
-      --cyan: #16c8ff;
-      --blue: #168cff;
-      --purple: #a900ff;
-      --green: #19e6a3;
-      --text: #f5f7fb;
-      --muted: #8792a6;
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
       margin: 0;
+      padding: 0;
       background:
-        radial-gradient(circle at 50% 20%, #101d35 0%, #050a12 45%, #03070d 100%);
+        radial-gradient(circle at 50% 0%, rgba(24, 207, 255, 0.08), transparent 32%),
+        radial-gradient(circle at 50% 35%, rgba(155, 22, 255, 0.06), transparent 40%),
+        var(--bg);
+
       color: var(--text);
-      font-family: Arial, Helvetica, sans-serif;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
       min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    button {
+      font-family: inherit;
     }
 
     .app {
       width: 100%;
       max-width: 520px;
-      margin: auto;
-      padding-bottom: 110px;
+      margin: 0 auto;
+      min-height: 100vh;
+      padding-bottom: calc(var(--nav-height) + 24px);
     }
 
-    /* TOP BAR */
+    /* =========================
+       TOP BAR
+    ========================= */
 
     .topbar {
-      height: 70px;
+      height: 68px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 20px;
-      border-bottom: 1px solid #152234;
+
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(5, 9, 20, 0.82);
+
+      position: sticky;
+      top: 0;
+      z-index: 20;
+
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-size: 25px;
-      font-weight: 800;
+      gap: 11px;
     }
 
-    .brand img {
+    .brand-logo {
       width: 38px;
       height: 38px;
       border-radius: 50%;
+      object-fit: cover;
+      box-shadow:
+        0 0 0 2px rgba(255,255,255,0.9),
+        0 0 20px rgba(155,22,255,0.35);
     }
 
-    .menu-icon {
-      font-size: 27px;
-      color: #cbd3df;
+    .brand-name {
+      font-size: 21px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
     }
 
-    /* USER */
+    .top-menu {
+      width: 38px;
+      height: 38px;
+      border: 0;
+      background: transparent;
+      color: #aab5c7;
+      font-size: 25px;
+      cursor: pointer;
+    }
 
-    .user-area {
+    /* =========================
+       USER
+    ========================= */
+
+    .user-row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 18px 20px;
+      align-items: center;
+      padding: 22px 20px 4px;
     }
 
-    .user-left {
+    .user-info {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      min-width: 0;
     }
 
     .avatar {
-      width: 54px;
-      height: 54px;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
       object-fit: cover;
-      background: white;
+
+      border: 2px solid rgba(255,255,255,0.9);
+      background: #121b30;
+
+      flex-shrink: 0;
+    }
+
+    .user-details {
+      min-width: 0;
     }
 
     .username {
-      font-size: 20px;
-      font-weight: 800;
+      font-size: 18px;
+      font-weight: 750;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 190px;
     }
 
     .level {
-      display: inline-block;
+      display: inline-flex;
       margin-top: 5px;
-      padding: 5px 10px;
-      border-radius: 10px;
-      background: #28334b;
-      color: white;
-      font-size: 12px;
-      font-weight: bold;
+      padding: 4px 9px;
+      border-radius: 8px;
+
+      background: #17233c;
+      color: #d5deed;
+
+      font-size: 11px;
+      font-weight: 700;
     }
 
-    .verified {
-      display: none;
-      margin-left: 5px;
-      padding: 5px 9px;
-      border: 1px solid #087e65;
-      border-radius: 10px;
-      background: #062c27;
-      color: var(--green);
-      font-size: 12px;
-      font-weight: bold;
-    }
-
-    .wallet-address {
-      border: 1px solid #087fd4;
-      background: #071a2b;
+    .wallet-status {
+      border: 1px solid rgba(25,207,255,0.42);
       color: var(--cyan);
-      padding: 12px 13px;
-      border-radius: 22px;
+
+      border-radius: 999px;
+      padding: 9px 14px;
+
       font-size: 12px;
-      font-weight: bold;
-      max-width: 145px;
-      overflow: hidden;
+      font-weight: 700;
+
+      background: rgba(25,207,255,0.04);
       white-space: nowrap;
-      text-overflow: ellipsis;
     }
 
-    /* TITLE */
+    .wallet-status.connected {
+      color: var(--green);
+      border-color: rgba(24,214,158,0.45);
+      background: rgba(24,214,158,0.06);
+    }
 
-    .title {
+    /* =========================
+       HERO
+    ========================= */
+
+    .hero {
       text-align: center;
-      margin-top: 5px;
+      padding: 25px 20px 8px;
     }
 
-    .title h1 {
+    .hero h1 {
       margin: 0;
-      font-size: 30px;
-      background: linear-gradient(90deg, var(--cyan), #ffffff, var(--purple));
+
+      font-size: 31px;
+      line-height: 1.1;
+      font-weight: 850;
+      letter-spacing: -1px;
+
+      background:
+        linear-gradient(
+          90deg,
+          var(--cyan),
+          #dcecff 45%,
+          #dca5ff
+        );
+
       -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
     }
 
-    .subtitle {
+    .hero p {
+      margin: 9px 0 0;
+
       color: var(--muted);
-      margin-top: 7px;
+      font-size: 15px;
     }
 
-    /* MINING CARD */
+    /* =========================
+       MINING CARD
+    ========================= */
 
     .mining-card {
-      margin: 18px 15px;
-      padding: 20px 12px 15px;
-      border: 1px solid #173453;
-      border-radius: 25px;
+      margin: 18px 16px 0;
+      padding: 20px 14px 18px;
+
+      border: 1px solid var(--border);
+      border-radius: 26px;
+
       background:
-        radial-gradient(circle at center, #102c4c 0%, #0b1627 45%, #08111e 100%);
-      box-shadow: 0 0 35px rgba(0, 140, 255, 0.08);
-      text-align: center;
+        radial-gradient(
+          circle at 50% 35%,
+          rgba(25,207,255,0.055),
+          transparent 42%
+        ),
+        linear-gradient(
+          145deg,
+          rgba(12,25,47,0.98),
+          rgba(6,13,27,0.98)
+        );
+
+      box-shadow:
+        0 20px 55px rgba(0,0,0,0.25);
     }
 
     .reward-label {
-      color: #9aa8bc;
-      font-size: 14px;
-      font-weight: bold;
-      letter-spacing: 2px;
-    }
+      text-align: center;
 
-    .reward {
-      display: inline-block;
-      margin: 8px 0 15px;
-      padding: 12px 25px;
-      border: 1px solid #008ed0;
-      border-radius: 18px;
-      color: var(--cyan);
-      font-size: 27px;
+      color: #9aa7ba;
+      font-size: 12px;
       font-weight: 800;
-      background: #061726;
-      box-shadow: 0 0 20px rgba(0, 200, 255, 0.08);
+
+      letter-spacing: 2px;
+      text-transform: uppercase;
     }
 
-    /* MINING CIRCLE */
+    .reward-value {
+      width: fit-content;
+      min-width: 205px;
 
-    .mine-circle {
-      width: 285px;
-      height: 285px;
-      margin: 5px auto 15px;
+      margin: 10px auto 18px;
+      padding: 10px 18px;
+
+      border-radius: 17px;
+      border: 1px solid rgba(25,207,255,0.48);
+
+      background: rgba(4,16,31,0.8);
+
+      color: var(--cyan);
+      font-size: 23px;
+      font-weight: 850;
+
+      box-shadow:
+        0 0 22px rgba(25,207,255,0.10);
+    }
+
+    /* =========================
+       MINING CIRCLE
+    ========================= */
+
+    .mining-circle {
+      width: 228px;
+      height: 228px;
+
+      margin: 0 auto;
+
+      padding: 11px;
+
       border-radius: 50%;
-      padding: 15px;
+
       background:
         conic-gradient(
-          var(--cyan),
-          #1375ff,
+          from 210deg,
           var(--purple),
-          var(--cyan)
+          #6e2cff 28%,
+          var(--cyan) 63%,
+          #2785ff 82%,
+          var(--purple)
         );
+
       box-shadow:
-        0 0 25px rgba(0, 184, 255, 0.35),
-        inset 0 0 25px rgba(255,255,255,0.1);
+        0 0 25px rgba(25,207,255,0.23),
+        0 0 35px rgba(155,22,255,0.15);
     }
 
-    .mine-inner {
-      width: 235px;
-      height: 235px;
+    .mining-circle.mining {
+      animation: ringPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes ringPulse {
+      0%, 100% {
+        transform: scale(1);
+        filter: brightness(1);
+      }
+
+      50% {
+        transform: scale(1.025);
+        filter: brightness(1.16);
+      }
+    }
+
+    .mining-inner {
+      width: 100%;
+      height: 100%;
+
       border-radius: 50%;
-      background: radial-gradient(circle, #17213d 0%, #0b1224 55%, #050914 100%);
+
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      border: 5px solid #07101c;
+
+      background:
+        radial-gradient(
+          circle at 50% 42%,
+          #172441 0%,
+          #0c162c 52%,
+          #050a16 100%
+        );
+
+      border: 4px solid #07101f;
+
+      box-shadow:
+        inset 0 0 28px rgba(0,0,0,0.55);
     }
 
-    .mine-inner img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: contain;
-  background: transparent;
+    .coin-logo {
+      width: 88px;
+      height: 88px;
+
+      object-fit: cover;
+      border-radius: 50%;
+
+      border: 3px solid white;
+
+      box-shadow:
+        0 0 20px rgba(155,22,255,0.38);
     }
 
     .coin-name {
       margin-top: 10px;
-      background: #07101d;
-      border: 1px solid var(--cyan);
+
+      min-width: 96px;
+      padding: 7px 18px;
+
+      border-radius: 999px;
+
+      border: 1px solid rgba(25,207,255,0.42);
+
       color: var(--cyan);
-      border-radius: 15px;
-      padding: 6px 35px;
-      font-weight: bold;
-    }
+      background: rgba(3,12,25,0.65);
 
-    /* SPEED */
-
-    .stats {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-top: 5px;
-    }
-
-    .stat {
-      border: 1px solid #19476a;
-      background: #102136;
-      border-radius: 20px;
-      padding: 9px 15px;
-      color: #b9c4d3;
       font-size: 14px;
-    }
-
-    .stat strong {
-      color: var(--cyan);
-    }
-
-    .timer-stat {
-      color: var(--green);
-      border-color: #087d66;
-    }
-
-    /* MINING STATUS */
-
-    .mining-status {
-      margin: 12px 15px;
-      border: 1px solid #087fd4;
-      background: #172236;
-      border-radius: 20px;
-      padding: 18px;
-      color: #7bdcff;
-      font-size: 22px;
       font-weight: 800;
     }
 
-    /* ACTIONS */
+    /* =========================
+       MINING STATS
+    ========================= */
+
+    .mining-stats {
+      display: flex;
+      justify-content: center;
+      gap: 9px;
+
+      margin-top: 17px;
+    }
+
+    .stat-pill {
+      padding: 9px 13px;
+
+      border-radius: 999px;
+
+      background: #101d32;
+      border: 1px solid rgba(115,143,180,0.14);
+
+      color: #b6c1d2;
+
+      font-size: 13px;
+    }
+
+    .stat-pill strong {
+      color: white;
+    }
+
+    .timer {
+      border-color: rgba(24,214,158,0.28);
+      color: var(--green);
+      background: rgba(24,214,158,0.04);
+    }
+
+    /* =========================
+       START BUTTON
+    ========================= */
+
+    .start-button {
+      width: calc(100% - 32px);
+
+      height: 58px;
+
+      margin: 16px 16px 0;
+
+      border: 1px solid rgba(25,207,255,0.45);
+      border-radius: 18px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #142440,
+          #101a30
+        );
+
+      color: var(--cyan);
+
+      font-size: 17px;
+      font-weight: 850;
+      letter-spacing: 0.4px;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 8px 25px rgba(0,0,0,0.22);
+
+      transition:
+        transform 0.15s ease,
+        background 0.2s ease;
+    }
+
+    .start-button:active {
+      transform: scale(0.98);
+    }
+
+    .start-button.mining {
+      color: white;
+
+      border-color: rgba(24,214,158,0.5);
+
+      background:
+        linear-gradient(
+          135deg,
+          #123d38,
+          #102a2a
+        );
+    }
+
+    /* =========================
+       ACTIONS
+    ========================= */
 
     .actions {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin: 12px 15px;
+
+      gap: 12px;
+
+      margin: 14px 16px 0;
     }
 
-    .action {
-      border: 1px solid #28364b;
-      background: #111a29;
-      color: white;
+    .action-button {
+      min-height: 57px;
+
       border-radius: 18px;
-      padding: 17px 8px;
-      font-size: 15px;
-      font-weight: bold;
+
+      border: 1px solid rgba(115,143,180,0.13);
+
+      background: #101a2b;
+
+      color: #edf2fa;
+
+      font-size: 14px;
+      font-weight: 750;
+
+      cursor: pointer;
     }
 
-    .action span {
+    .action-icon {
       color: var(--cyan);
       margin-right: 7px;
     }
 
-    /* WALLET */
+    /* =========================
+       PRICE
+    ========================= */
 
-    .section-title {
-      margin: 22px 20px 10px;
-      color: #a6afbf;
-      font-weight: bold;
-      letter-spacing: 1px;
+    .price-card {
+      margin: 18px 16px 0;
+      padding: 17px;
+
+      border-radius: 20px;
+
+      border: 1px solid rgba(25,207,255,0.14);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(12,24,45,0.95),
+          rgba(8,15,29,0.95)
+        );
     }
 
-    .wallet-card {
-      margin: 0 15px;
-      padding: 20px;
-      border-radius: 22px;
-      border: 1px solid #202d40;
-      background: #0c1421;
-    }
-
-    .assets {
+    .price-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .asset-left {
+    .price-title {
+      color: #aab5c6;
+      font-size: 12px;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+    }
+
+    .price-live {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 9px rgba(24,214,158,0.7);
+    }
+
+    .price-row {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+
+      margin-top: 10px;
+    }
+
+    .price {
+      font-size: 27px;
+      font-weight: 850;
+      color: white;
+    }
+
+    .change {
+      font-size: 13px;
+      font-weight: 750;
+      color: var(--green);
+    }
+
+    .change.negative {
+      color: var(--red);
+    }
+
+    .updated {
+      margin-top: 5px;
+
+      color: #66758c;
+      font-size: 10px;
+    }
+
+    /* =========================
+       WALLET
+    ========================= */
+
+    .section {
+      margin: 24px 16px 0;
+    }
+
+    .section-title {
+      margin: 0 0 11px 5px;
+
+      color: #aeb8ca;
+
+      font-size: 14px;
+      font-weight: 850;
+
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .wallet-card {
+      padding: 18px;
+
+      border-radius: 21px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #0d192d,
+          #091225
+        );
+
+      border: 1px solid rgba(90,130,180,0.14);
+    }
+
+    .asset-row {
       display: flex;
       align-items: center;
       gap: 13px;
     }
 
-    .small-logo {
-      width: 55px;
-      height: 55px;
+    .asset-icon {
+      width: 48px;
+      height: 48px;
+
       border-radius: 50%;
+
+      object-fit: cover;
+
+      border: 2px solid white;
     }
 
     .asset-label {
-      color: #8994a7;
-      font-size: 14px;
+      color: #8591a6;
+      font-size: 12px;
     }
 
-    .asset-total {
-      margin-top: 5px;
-      font-size: 27px;
-      font-weight: 800;
+    .asset-value {
+      margin-top: 2px;
+
+      color: white;
+
+      font-size: 21px;
+      font-weight: 850;
     }
 
-    .usd {
-      color: #9ba5b5;
-      font-size: 14px;
+    .wallet-lines {
+      margin-top: 17px;
+      padding-top: 15px;
+
+      border-top: 1px solid rgba(255,255,255,0.06);
     }
 
-    .wallet-row {
+    .wallet-line {
       display: flex;
       justify-content: space-between;
-      padding-top: 15px;
-      color: #8e99ab;
-      font-size: 15px;
+
+      padding: 8px 0;
+
+      color: #8995aa;
+      font-size: 13px;
     }
 
-    .wallet-row strong {
-      color: var(--cyan);
+    .wallet-line strong {
+      color: #eef3fa;
     }
 
-    .wallet-row .green {
-      color: var(--green);
+    /* =========================
+       OTHER PAGES
+    ========================= */
+
+    .page {
+      display: none;
+      padding: 25px 16px 0;
     }
 
-    /* PRICE */
-
-    .price-card {
-      margin: 18px 15px;
-      padding: 20px;
-      border: 1px solid #1d2a3c;
-      border-radius: 22px;
-      background: #09111d;
+    .page.active {
+      display: block;
     }
 
-    .price {
-      font-size: 36px;
-      font-weight: 800;
-    }
+    .page h2 {
+      margin: 0;
 
-    .price-label {
-      color: var(--cyan);
-      font-size: 12px;
-      margin-top: 7px;
-    }
-
-    .price-note {
-      color: #78869a;
-      font-size: 12px;
-      margin-top: 15px;
-    }
-
-    /* BOTTOM NAV */
-
-    .bottom-nav {
-      position: fixed;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 25px);
-      max-width: 495px;
-      height: 82px;
-      background: rgba(10, 17, 29, 0.97);
-      border: 1px solid #27364b;
-      border-radius: 30px;
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      z-index: 100;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      color: #8791a4;
-      font-size: 11px;
-      font-weight: bold;
-      gap: 5px;
-    }
-
-    .nav-icon {
       font-size: 25px;
     }
 
-    .nav-item.active {
-      color: var(--cyan);
+    .page-subtitle {
+      margin-top: 7px;
+
+      color: var(--muted);
+      font-size: 14px;
     }
 
-    /* MOBILE */
+    .feature-card {
+      margin-top: 16px;
 
-    @media (max-width: 370px) {
-      .mine-circle {
-        width: 250px;
-        height: 250px;
+      padding: 19px;
+
+      border-radius: 20px;
+
+      border: 1px solid rgba(90,130,180,0.15);
+
+      background: #0c172a;
+    }
+
+    .feature-card h3 {
+      margin: 0 0 8px;
+
+      font-size: 16px;
+    }
+
+    .feature-card p {
+      margin: 0;
+
+      color: var(--muted);
+
+      line-height: 1.5;
+      font-size: 13px;
+    }
+
+    .feature-button {
+      width: 100%;
+
+      margin-top: 14px;
+
+      padding: 13px;
+
+      border: 1px solid rgba(25,207,255,0.3);
+      border-radius: 13px;
+
+      background: #10213a;
+
+      color: var(--cyan);
+
+      font-weight: 750;
+    }
+
+    /* =========================
+       BOTTOM NAV
+    ========================= */
+
+    .bottom-nav {
+      position: fixed;
+
+      left: 50%;
+      bottom: 10px;
+
+      transform: translateX(-50%);
+
+      width: min(488px, calc(100% - 20px));
+
+      height: var(--nav-height);
+
+      padding: 7px;
+
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+
+      border-radius: 25px;
+
+      border: 1px solid rgba(100,140,190,0.18);
+
+      background:
+        rgba(8,15,28,0.94);
+
+      box-shadow:
+        0 15px 45px rgba(0,0,0,0.45);
+
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+
+      z-index: 50;
+    }
+
+    .nav-button {
+      border: 0;
+      background: transparent;
+
+      color: #78859a;
+
+      border-radius: 18px;
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      gap: 4px;
+
+      font-size: 10px;
+      font-weight: 750;
+
+      cursor: pointer;
+    }
+
+    .nav-icon {
+      font-size: 21px;
+      line-height: 1;
+    }
+
+    .nav-button.active {
+      color: var(--cyan);
+
+      background:
+        rgba(25,207,255,0.06);
+    }
+
+    /* =========================
+       TOAST
+    ========================= */
+
+    .toast {
+      position: fixed;
+
+      left: 50%;
+      bottom: 98px;
+
+      transform:
+        translate(-50%, 20px);
+
+      opacity: 0;
+
+      pointer-events: none;
+
+      width: min(88%, 390px);
+
+      padding: 12px 16px;
+
+      border-radius: 13px;
+
+      background: #111e34;
+      border: 1px solid rgba(25,207,255,0.2);
+
+      color: white;
+
+      text-align: center;
+
+      font-size: 13px;
+
+      z-index: 100;
+
+      transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+
+      transform:
+        translate(-50%, 0);
+    }
+
+    /* =========================
+       SMALL SCREENS
+    ========================= */
+
+    @media (max-width: 360px) {
+      .hero h1 {
+        font-size: 27px;
       }
 
-      .wallet-address {
-        max-width: 115px;
+      .mining-circle {
+        width: 205px;
+        height: 205px;
+      }
+
+      .coin-logo {
+        width: 78px;
+        height: 78px;
+      }
+
+      .reward-value {
+        font-size: 20px;
+      }
+
+      .stat-pill {
+        padding: 8px 10px;
+        font-size: 12px;
       }
     }
   </style>
@@ -458,343 +916,277 @@
 
 <div class="app">
 
-  <!-- TOP BAR -->
-  <div class="topbar">
+  <!-- =========================
+       TOP BAR
+  ========================= -->
+
+  <header class="topbar">
+
     <div class="brand">
-      <img src="tac-logo.png" alt="TAC">
-      TAC
-    </div>
-    <div class="menu-icon">⋮</div>
-  </div>
+      <img
+        src="tac-logo.png"
+        class="brand-logo"
+        alt="TAC"
+      >
 
-  <!-- USER -->
-  <div class="user-area">
-
-    <div class="user-left">
-      <img class="avatar" id="avatar" src="tac-logo.png">
-
-      <div>
-        <div class="username" id="username">User</div>
-
-        <span class="level">Lv 1</span>
-
-        <span class="verified" id="verified">
-          ✓ Verified
-        </span>
-      </div>
+      <span class="brand-name">TAC</span>
     </div>
 
-    <div class="wallet-address" id="walletAddress">
-      Not Connected
-    </div>
+    <button
+      class="top-menu"
+      onclick="showToast('TAC Miner settings coming soon')"
+      aria-label="Menu"
+    >
+      ⋮
+    </button>
 
-  </div>
+  </header>
 
-  <!-- TITLE -->
 
-  <div class="title">
-    <h1>TAC Miner</h1>
-    <div class="subtitle">
-      Mine. Earn. Build the Future.
-    </div>
-  </div>
+  <!-- =========================
+       MINE PAGE
+  ========================= -->
 
-  <!-- MINING -->
+  <main id="minePage">
 
-  <div class="mining-card">
+    <!-- USER -->
 
-    <div class="reward-label">
-      CYCLE REWARD
-    </div>
+    <section class="user-row">
 
-    <div class="reward">
-      ⚡ <span id="cycleReward">0.0000</span> TAC
-    </div>
+      <div class="user-info">
 
-    <div class="mine-circle">
+        <img
+          id="userAvatar"
+          class="avatar"
+          src="tac-logo.png"
+          alt="User"
+        >
 
-      <div class="mine-inner">
+        <div class="user-details">
 
-        <img src="tac-logo.png" alt="TAC Logo">
+          <div
+            id="username"
+            class="username"
+          >
+            User
+          </div>
 
-        <div class="coin-name">
-          TAC
+          <div class="level">
+            Lv 1
+          </div>
+
         </div>
 
       </div>
 
-    </div>
-
-    <div class="stats">
-
-      <div class="stat">
-        Speed:
-        <strong id="speed">0</strong> TAC/h
+      <div
+        id="walletStatus"
+        class="wallet-status"
+      >
+        Not Connected
       </div>
 
-      <div class="stat timer-stat">
-        <span id="timer">08:00:00</span>
+    </section>
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+      <h1>TAC Miner</h1>
+
+      <p>Mine. Earn. Build the Future.</p>
+
+    </section>
+
+
+    <!-- MINING CARD -->
+
+    <section class="mining-card">
+
+      <div class="reward-label">
+        Cycle Reward
       </div>
 
-    </div>
+      <div
+        id="reward"
+        class="reward-value"
+      >
+        ⚡ 0.0000 TAC
+      </div>
 
-  </div>
 
-  <!-- MINING STATUS -->
+      <!-- MINING CIRCLE -->
 
-  <div class="mining-status" id="miningStatus">
-    START MINING
-  </div>
+      <div
+        id="miningCircle"
+        class="mining-circle"
+      >
 
-  <!-- ACTIONS -->
+        <div class="mining-inner">
 
-  <div class="actions">
+          <img
+            src="tac-logo.png"
+            class="coin-logo"
+            alt="TAC Logo"
+          >
 
-    <button class="action" onclick="buyMiners()">
-      <span>▣</span> Buy Miners
-    </button>
-
-    <button class="action" onclick="withdraw()">
-      <span>↓</span> Withdraw
-    </button>
-
-  </div>
-
-  <!-- WALLETS -->
-
-  <div class="section-title">
-    YOUR WALLETS
-  </div>
-
-  <div class="wallet-card">
-
-    <div class="assets">
-
-      <div class="asset-left">
-
-        <img class="small-logo"
-             src="tac-logo.png"
-             alt="TAC">
-
-        <div>
-          <div class="asset-label">
-            Total Assets
+          <div class="coin-name">
+            TAC
           </div>
 
-          <div class="asset-total">
-            <span id="totalAssets">0.00</span> TAC
-          </div>
         </div>
 
       </div>
 
-      <div class="usd" id="usdValue">
-        ≈ $0.00
+
+      <!-- STATS -->
+
+      <div class="mining-stats">
+
+        <div class="stat-pill">
+          Speed:
+          <strong id="speed">
+            0 TAC/h
+          </strong>
+        </div>
+
+        <div
+          id="timer"
+          class="stat-pill timer"
+        >
+          08:00:00
+        </div>
+
       </div>
 
+    </section>
+
+
+    <!-- START -->
+
+    <button
+      id="startButton"
+      class="start-button"
+      onclick="toggleMining()"
+    >
+      START MINING
+    </button>
+
+
+    <!-- ACTIONS -->
+
+    <div class="actions">
+
+      <button
+        class="action-button"
+        onclick="showToast('Miner marketplace coming soon')"
+      >
+        <span class="action-icon">▣</span>
+        Buy Miners
+      </button>
+
+      <button
+        class="action-button"
+        onclick="showToast('Connect your TON wallet to withdraw')"
+      >
+        <span class="action-icon">↓</span>
+        Withdraw
+      </button>
+
     </div>
 
-    <div class="wallet-row">
-      <span>Holding Wallet</span>
-      <strong>0.00 TAC</strong>
-    </div>
 
-    <div class="wallet-row">
-      <span>Pool Wallet <small>(withdrawable)</small></span>
-      <strong class="green">0.00 TAC</strong>
-    </div>
+    <!-- PRICE -->
 
-  </div>
+    <section class="price-card">
 
-  <!-- PRICE -->
+      <div class="price-top">
 
-  <div class="price-card">
+        <div class="price-title">
+          TAC Market Price
+        </div>
 
-    <div class="price" id="tacPrice">
-      $0.00000
-    </div>
+        <div class="price-live">
+          <span class="live-dot"></span>
+          LIVE
+        </div>
 
-    <div class="price-label">
-      TAC LIVE
-    </div>
+      </div>
 
-    <div class="price-note">
-      Live TAC market price will be connected through the secure backend.
-    </div>
+      <div class="price-row">
 
-  </div>
+        <div
+          id="tacPrice"
+          class="price"
+        >
+          Loading...
+        </div>
 
-</div>
+        <div
+          id="priceChange"
+          class="change"
+        >
+          --
+        </div>
 
-<!-- BOTTOM NAV -->
+      </div>
 
-<div class="bottom-nav">
+      <div
+        id="priceUpdated"
+        class="updated"
+      >
+        Updating from CryptoRank...
+      </div>
 
-  <div class="nav-item active">
-    <div class="nav-icon">⛏</div>
-    Mine
-  </div>
+    </section>
 
-  <div class="nav-item">
-    <div class="nav-icon">☑</div>
-    Tasks
-  </div>
 
-  <div class="nav-item">
-    <div class="nav-icon">⚡</div>
-    Miners
-  </div>
+    <!-- WALLETS -->
 
-  <div class="nav-item">
-    <div class="nav-icon">♧</div>
-    Friends
-  </div>
+    <section class="section">
 
-  <div class="nav-item">
-    <div class="nav-icon">♙</div>
-    Profile
-  </div>
+      <h2 class="section-title">
+        Your Wallets
+      </h2>
 
-</div>
+      <div class="wallet-card">
 
-<script>
+        <div class="asset-row">
 
-  /* TELEGRAM */
+          <img
+            src="tac-logo.png"
+            class="asset-icon"
+            alt="TAC"
+          >
 
-  const tg = window.Telegram.WebApp;
+          <div>
 
-  tg.ready();
-  tg.expand();
+            <div class="asset-label">
+              Total Assets
+            </div>
 
-  /*
-    Get Telegram user information automatically.
-  */
+            <div class="asset-value">
+              <span id="totalAssets">0.0000</span> TAC
+            </div>
 
-  const user = tg.initDataUnsafe?.user;
+          </div>
 
-  if (user) {
+        </div>
 
-    let displayName =
-      user.username
-        ? "@" + user.username
-        : (user.first_name || "User");
 
-    document.getElementById("username").textContent =
-      displayName;
+        <div class="wallet-lines">
 
-    if (user.photo_url) {
-      document.getElementById("avatar").src =
-        user.photo_url;
-    }
-  }
+          <div class="wallet-line">
+            <span>Holding Wallet</span>
+            <strong>0.0000 TAC</strong>
+          </div>
 
-  /* INITIAL TAC STATE */
+          <div class="wallet-line">
+            <span>Pool Wallet</span>
+            <strong>0.0000 TAC</strong>
+          </div>
 
-  let mining = false;
-
-  let remainingSeconds = 8 * 60 * 60;
-
-  let speed = 0;
-
-  let cycleReward = 0;
-
-  let totalAssets = 0;
-
-  let timerInterval = null;
-
-
-  /* FORMAT TIMER */
-
-  function formatTime(seconds) {
-
-    const h =
-      Math.floor(seconds / 3600)
-      .toString()
-      .padStart(2, "0");
-
-    const m =
-      Math.floor((seconds % 3600) / 60)
-      .toString()
-      .padStart(2, "0");
-
-    const s =
-      (seconds % 60)
-      .toString()
-      .padStart(2, "0");
-
-    return `${h}:${m}:${s}`;
-  }
-
-
-  /* START MINING */
-
-  function startMining() {
-
-    if (mining) {
-      tg.showAlert("TAC mining is already active.");
-      return;
-    }
-
-    mining = true;
-
-    speed = 10;
-
-    document.getElementById("speed").textContent =
-      speed;
-
-    document.getElementById("miningStatus").textContent =
-      "MINING... 08:00:00";
-
-    timerInterval = setInterval(() => {
-
-      if (remainingSeconds <= 0) {
-
-        clearInterval(timerInterval);
-
-        mining = false;
-
-        speed = 0;
-
-        document.getElementById("speed").textContent =
-          "0";
-
-        document.getElementById("miningStatus").textContent =
-          "MINING COMPLETE";
-
-        return;
-      }
-
-      remainingSeconds--;
-
-      document.getElementById("timer").textContent =
-        formatTime(remainingSeconds);
-
-      document.getElementById("miningStatus").textContent =
-        "MINING... " +
-        formatTime(remainingSeconds);
-
-    }, 1000);
-
-    tg.showAlert("🚀 TAC mining has started!");
-  }
-
-
-  /* BUTTON */
-
-  document.getElementById("miningStatus")
-    .addEventListener("click", startMining);
-
-
-  function buyMiners() {
-    tg.showAlert("🚀 TAC Miner upgrades will be available soon.");
-  }
-
-
-  function withdraw() {
-    tg.showAlert("💳 Connect and verify your wallet before withdrawing TAC.");
-  }
-
-</script>
-
-</body>
-</html>
+          <div class="wallet-line">
+            <span>Wallet Status</span>
+  

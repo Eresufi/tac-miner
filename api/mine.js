@@ -75,7 +75,8 @@ export default async function handler(req, res) {
       initData,
       botToken
     );
-
+   const initParams = new URLSearchParams(initData || "");
+   const referralTelegramId = initParams.get("start_param");
     if (!telegramUser?.id) {
       return res.status(401).json({
         error: "Invalid Telegram authentication"
@@ -123,6 +124,25 @@ export default async function handler(req, res) {
       userId = users[0].id;
     } else {
       // Create the user
+      let referredBy = null;
+
+if (
+  referralTelegramId &&
+  referralTelegramId !== String(telegramUser.id)
+) {
+  const referrerResponse = await fetch(
+    `${supabaseUrl}/rest/v1/users?telegram_id=eq.${encodeURIComponent(referralTelegramId)}&select=id`,
+    {
+      headers
+    }
+  );
+
+  const referrers = await referrerResponse.json();
+
+  if (referrerResponse.ok && referrers.length) {
+    referredBy = referrers[0].id;
+  }
+}
       const createUserResponse = await fetch(
         `${supabaseUrl}/rest/v1/users`,
         {
@@ -137,6 +157,7 @@ export default async function handler(req, res) {
             first_name: telegramUser.first_name || null,
             last_name: telegramUser.last_name || null,
             balance: 0
+            referred_by: referredBy
           })
         }
       );

@@ -320,11 +320,11 @@ if(state.mining && state.cycleEnd && Date.now()>=state.cycleEnd){
     showToast('Claim connection error');
   }
 }
-async function toggleMining(){
-    if(state.mining && state.cycleEnd && Date.now()<state.cycleEnd){
-        showToast('Mining is already active');
-        return;
-    }
+async function toggleMining()if(state.mining && state.cycleEnd && Date.now()<state.cycleEnd){
+  SPEED=4;
+  updateUI();
+  return;
+}
 
     try{
         const initData=tg?.initData||'';
@@ -343,8 +343,19 @@ async function toggleMining(){
         const result=await response.json();SPEED=Number(result.ratePerHour)||0;
 
         if(!response.ok){
-            showToast(result.error||'Could not start mining');
-            return;
+  if(result.cycle){
+    SPEED=Number(result.cycle.rate_per_hour)||4;
+    state.mining=true;
+    state.cycleStart=new Date(result.cycle.started_at).getTime();
+    state.cycleEnd=new Date(result.cycle.ends_at).getTime();
+    save();
+    updateUI();
+    showToast('Mining restored');
+    return;
+  }
+
+  showToast(result.error||'Could not start mining');
+  return;
         }
 
         state.mining=true;

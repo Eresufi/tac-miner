@@ -243,7 +243,7 @@ if(tg){
 
 const STORAGE='tac_miner_v2';
 const CYCLE=8*60*60*1000;
-let SPEED=0; // Keep zero until the official TAC mining rate is configured.
+let SPEED=4; // Keep zero until the official TAC mining rate is configured.
 
 let state=JSON.parse(localStorage.getItem(STORAGE)||'null')||{
  balance:0,cycleStart:null,cycleEnd:null,mining:false,wallet:null

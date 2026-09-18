@@ -156,7 +156,7 @@ if (
             username: telegramUser.username || null,
             first_name: telegramUser.first_name || null,
             last_name: telegramUser.last_name || null,
-            balance: 0
+            balance: 0,
             referred_by: referredBy
           })
         }

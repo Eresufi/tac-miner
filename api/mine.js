@@ -155,7 +155,7 @@ export default async function handler(req, res) {
 
     // Check for an existing active mining cycle
     const activeResponse = await fetch(
-      `${supabaseUrl}/rest/v1/mining_cycles?user_id=eq.${userId}&status=eq.active&select=id,ends_at`,
+      `${supabaseUrl}/rest/v1/mining_cycles?user_id=eq.${userId}&status=eq.active&select=id,started_at,ends_at,rate_per_hour,reward`,
       {
         headers
       }

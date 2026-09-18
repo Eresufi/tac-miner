@@ -392,7 +392,7 @@ function showPage(id,btn){
 function copyReferral(){
  const id=tg?.initDataUnsafe?.user?.id;
  const bot='TAC_AIRDROP_BOT';
- const link=id?`https://t.me/${bot}?start=${id}`:'Open this app in Telegram to generate your referral link.';
+ const link=id?`https://t.me/${bot}?startapp=${id}`:'Open this app in Telegram to generate your referral link.';
  if(navigator.clipboard && id)navigator.clipboard.writeText(link).then(()=>showToast('Referral link copied')).catch(()=>showToast(link));
  else showToast(link);
 }

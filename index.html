@@ -288,14 +288,46 @@ function updateUI(){
    document.getElementById('startButton').textContent='START MINING';
  }
 }
-function toggleMining(){
- if(state.mining && state.cycleEnd && Date.now()<state.cycleEnd){
-   showToast('Mining is already active');
-   return;
- }
- state.mining=true;state.cycleStart=Date.now();state.cycleEnd=Date.now()+CYCLE;save();updateUI();
- showToast('Mining started');
-}
+async function toggleMining(){
+    if(state.mining && state.cycleEnd && Date.now()<state.cycleEnd){
+        showToast('Mining is already active');
+        return;
+    }
+
+    try{
+        const initData=tg?.initData||'';
+
+        if(!initData){
+            showToast('Please open TAC Miner inside Telegram');
+            return;
+        }
+
+        const response=await fetch('/api/mine',{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({initData})
+        });
+
+        const result=await response.json();
+
+        if(!response.ok){
+            showToast(result.error||'Could not start mining');
+            return;
+        }
+
+        state.mining=true;
+        state.cycleStart=new Date(result.cycle.started_at).getTime();
+        state.cycleEnd=new Date(result.cycle.ends_at).getTime();
+
+        save();
+        updateUI();
+
+        showToast('Mining started');
+    }catch(error){
+        console.error('Mining error:',error);
+        showToast('Mining connection error');
+    }
+  }
 setInterval(updateUI,1000);updateUI();
 
 function showToast(msg){

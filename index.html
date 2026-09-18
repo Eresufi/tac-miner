@@ -284,7 +284,41 @@ function updateUI(){
 document.getElementById('reward').textContent='⚡ '+formatTAC(earnedTAC)+' TAC';
 if(state.mining && state.cycleEnd && Date.now()>=state.cycleEnd){
   claimMining();
-} 
+} async function claimMining(){
+  try{
+    const initData=tg?.initData||'';
+
+    if(!initData){
+      showToast('Please open TAC Miner inside Telegram');
+      return;
+    }
+
+    const response=await fetch('/api/claim',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({initData})
+    });
+
+    const result=await response.json();
+
+    if(!response.ok){
+      showToast(result.error||'Could not claim mining reward');
+      return;
+    }
+
+    state.balance=Number(result.balance)||state.balance;
+    state.mining=false;
+    state.cycleStart=null;
+    state.cycleEnd=null;
+
+    save();
+    updateUI();
+
+    showToast('Mining reward claimed!');
+  }catch(error){
+    console.error('Claim error:',error);
+    showToast('Claim connection error');
+  }
 }
 async function toggleMining(){
     if(state.mining && state.cycleEnd && Date.now()<state.cycleEnd){

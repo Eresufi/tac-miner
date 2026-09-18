@@ -282,12 +282,9 @@ function updateUI(){
  document.getElementById('timer').textContent=active?formatTime(state.cycleEnd-Date.now()):'08:00:00';
  const elapsedHours=active?Math.min((Date.now()-state.cycleStart)/3600000,8):0;const earnedTAC=SPEED*elapsedHours;
 document.getElementById('reward').textContent='⚡ '+formatTAC(earnedTAC)+' TAC';
-
- if(state.mining && state.cycleEnd && Date.now()>=state.cycleEnd){
-   state.mining=false;state.cycleStart=null;state.cycleEnd=null;save();
-   document.getElementById('timer').textContent='08:00:00';
-   document.getElementById('startButton').textContent='START MINING';
- }
+if(state.mining && state.cycleEnd && Date.now()>=state.cycleEnd){
+  claimMining();
+} 
 }
 async function toggleMining(){
     if(state.mining && state.cycleEnd && Date.now()<state.cycleEnd){

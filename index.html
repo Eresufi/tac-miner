@@ -319,6 +319,7 @@ if(state.mining && state.cycleEnd && Date.now()>=state.cycleEnd){
     console.error('Claim error:',error);
     showToast('Claim connection error');
   }
+  }
   async function toggleMining(){
  if(state.mining && state.cycleEnd && Date.now()<state.cycleEnd){
     SPEED=4;

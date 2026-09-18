@@ -280,7 +280,8 @@ function updateUI(){
  document.getElementById('startButton').textContent=active?'MINING...':'START MINING';
  document.getElementById('speed').textContent=(active?SPEED:0)+' TAC/h';
  document.getElementById('timer').textContent=active?formatTime(state.cycleEnd-Date.now()):'08:00:00';
- document.getElementById('reward').textContent='⚡ '+formatTAC(SPEED*8)+' TAC';
+ const elapsedHours=active?Math.min((Date.now()-state.cycleStart)/3600000,8):0;const earnedTAC=SPEED*elapsedHours;
+document.getElementById('reward').textContent='⚡ '+formatTAC(earnedTAC)+' TAC';
 
  if(state.mining && state.cycleEnd && Date.now()>=state.cycleEnd){
    state.mining=false;state.cycleStart=null;state.cycleEnd=null;save();
@@ -343,7 +344,7 @@ function showPage(id,btn){
 }
 function copyReferral(){
  const id=tg?.initDataUnsafe?.user?.id;
- const bot='ART_AIRDROP_BOT';
+ const bot='TAC_AIRDROP_BOT';
  const link=id?`https://t.me/${bot}?start=${id}`:'Open this app in Telegram to generate your referral link.';
  if(navigator.clipboard && id)navigator.clipboard.writeText(link).then(()=>showToast('Referral link copied')).catch(()=>showToast(link));
  else showToast(link);

@@ -284,7 +284,9 @@ function updateUI(){
 document.getElementById('reward').textContent='⚡ '+formatTAC(earnedTAC)+' TAC';
 if(state.mining && state.cycleEnd && Date.now()>=state.cycleEnd){
   claimMining();
-} async function claimMining(){
+}
+}
+  async function claimMining(){
   try{
     const initData=tg?.initData||'';
 

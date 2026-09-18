@@ -202,8 +202,24 @@ button{font:inherit}
 </main>
 
 <section id="friendsPage" class="page">
- <h2>Friends</h2><div class="page-subtitle">Invite friends and track your referral activity.</div>
- <div class="feature-card"><h3>Referral system</h3><p>Your Telegram referral link will appear here when the backend is connected.</p><button class="feature-button" onclick="copyReferral()">COPY REFERRAL LINK</button></div>
+ <h2>Friends</h2>
+ <div class="page-subtitle">Invite friends and track your referral activity.</div>
+
+ <div class="feature-card">
+  <h3>👥 Your Referrals</h3>
+
+  <div style="font-size:32px;font-weight:900;color:var(--cyan);margin:12px 0;">
+   <span id="friendCount">0</span>
+  </div>
+
+  <p id="friendsStatus">Loading your referrals...</p>
+
+  <div id="friendsList" style="margin-top:14px;"></div>
+
+  <button class="feature-button" onclick="copyReferral()">
+   COPY REFERRAL LINK
+  </button>
+ </div>
 </section>
 
 <section id="tasksPage" class="page">

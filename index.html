@@ -359,6 +359,7 @@ if(state.mining && state.cycleEnd && Date.now()>=state.cycleEnd){
     });
 
     const result=await response.json();
+    
 
     if(!response.ok){
       if(result.cycle){
@@ -393,12 +394,64 @@ if(state.mining && state.cycleEnd && Date.now()>=state.cycleEnd){
   }
   }
 setInterval(updateUI,1000);updateUI();
+async function loadFriends(){
+  const countEl=document.getElementById('friendCount');
+  const statusEl=document.getElementById('friendsStatus');
+  const listEl=document.getElementById('friendsList');
 
+  try{
+    const initData=tg?.initData||'';
+
+    if(!initData){
+      statusEl.textContent='Open TAC Miner inside Telegram.';
+      return;
+    }
+
+    const response=await fetch('/api/referrals',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({initData})
+    });
+
+    const result=await response.json();
+
+    if(!response.ok){
+      statusEl.textContent=result.error||'Could not load referrals.';
+      return;
+    }
+
+    countEl.textContent=result.count||0;
+
+    if(!result.friends||!result.friends.length){
+      statusEl.textContent='No referrals yet. Invite your friends!';
+      listEl.innerHTML='';
+      return;
+    }
+
+    statusEl.textContent='Your referred friends:';
+
+    listEl.innerHTML=result.friends.map((friend,index)=>`
+      <div style="padding:12px 0;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:#eef3fa;font-weight:700;">
+          ${friend.username?'@'+friend.username:(friend.first_name||'Friend')}
+        </span>
+        <span style="color:var(--muted);font-size:12px;">
+          Friend ${index+1}
+        </span>
+      </div>
+    `).join('');
+
+  }catch(error){
+    console.error('Friends error:',error);
+    statusEl.textContent='Referral connection error.';
+  }
+}
 function showToast(msg){
  const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');
  clearTimeout(window.__toast);window.__toast=setTimeout(()=>el.classList.remove('show'),2400);
 }
-function showPage(id,btn){
+function showPage(id,btn)
+{if(id==='friendsPage')loadFriends();
  ['minePage','friendsPage','tasksPage','minersPage','walletPage'].forEach(x=>{
   const el=document.getElementById(x);if(el)el.classList.toggle('active',x===id);
  });

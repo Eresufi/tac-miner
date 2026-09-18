@@ -69,14 +69,15 @@ export default async function handler(req, res) {
       });
     }
 
-    const { initData } = req.body || {};
+    const { initData, startParam } = req.body || {};
 
     const telegramUser = verifyTelegramInitData(
       initData,
       botToken
     );
    const initParams = new URLSearchParams(initData || "");
-   const referralTelegramId = initParams.get("start_param");
+   const referralTelegramId =
+     initParams.get("start_param") || startParam;
     if (!telegramUser?.id) {
       return res.status(401).json({
         error: "Invalid Telegram authentication"

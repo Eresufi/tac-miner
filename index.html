@@ -320,7 +320,7 @@ if(state.mining && state.cycleEnd && Date.now()>=state.cycleEnd){
     showToast('Claim connection error');
   }
 }
-async function toggleMining(){if(state.mining && state.cycleEnd && Date.now()<state.cycleEnd){
+async function toggleMining(){if(state.mining && state.cycleEnd && Date.now()<state.cycleEnd)}{
   SPEED=4;
   updateUI();
   return;

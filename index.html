@@ -330,7 +330,7 @@ if(state.mining && state.cycleEnd && Date.now()>=state.cycleEnd){
 
   try{
     const initData=tg?.initData||'';
-
+    const startParam=tg?.initDataUnsafe?.start_param||'';
     if(!initData){
       showToast('Please open TAC Miner inside Telegram');
       return;
@@ -339,7 +339,7 @@ if(state.mining && state.cycleEnd && Date.now()>=state.cycleEnd){
     const response=await fetch('/api/mine',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({initData})
+      body:JSON.stringify({initData,startParam})
     });
 
     const result=await response.json();

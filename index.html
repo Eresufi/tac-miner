@@ -470,14 +470,7 @@ function copyReferral(){
  const link=id?`https://t.me/${bot}?startapp=${id}`:'Open this app in Telegram to generate your referral link.';
  if(navigator.clipboard && id)navigator.clipboard.writeText(link).then(()=>showToast('Referral link copied')).catch(()=>showToast(link));
  else showToast(link);
-}
-const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-  manifestUrl: window.location.origin + "/tonconnect-manifest.json"
-});
-
-async function connectWallet() {
-  try {
-    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+}const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
   manifestUrl: window.location.origin + "/tonconnect-manifest.json"
 });
 
@@ -521,6 +514,8 @@ async function connectWallet() {
   } catch (e) {
     console.error("Wallet error:", e);
     showToast("Wallet connection cancelled.");
+  }
+}
   }
 }
   }

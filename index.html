@@ -283,8 +283,10 @@ function formatTime(ms){
 }
 function updateUI(){
  document.getElementById('totalAssets').textContent=formatTAC(state.balance);
- document.getElementById('holdingWallet').textContent=formatTAC(state.balance)+' TAC';
- document.getElementById('poolWallet').textContent='0.0000 TAC';
+  document.getElementById('holdingWallet').textContent =
+  '0.0000 TAC';
+document.getElementById('poolWallet').textContent =
+  formatTAC(state.balance) + ' TAC';
  const status=state.wallet?'Connected':'Not Connected';
  document.getElementById('walletStatus').textContent=status;
  document.getElementById('walletLineStatus').textContent=status;

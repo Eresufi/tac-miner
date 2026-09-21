@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#050914">
 <title>TAC Miner</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-
+<script src="https://unpkg.com/@tonconnect/ui@2.0.9/dist/tonconnect-ui.min.js"></script>
 <style>
 :root{
   --bg:#050914;--panel:#0b1426;--panel2:#0e1930;
@@ -467,8 +467,26 @@ function copyReferral(){
  if(navigator.clipboard && id)navigator.clipboard.writeText(link).then(()=>showToast('Referral link copied')).catch(()=>showToast(link));
  else showToast(link);
 }
-function connectWallet(){
- showToast('TON wallet connection requires the wallet backend and TON Connect configuration.');
+const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl: window.location.origin + "/tonconnect-manifest.json"
+});
+
+async function connectWallet() {
+  try {
+    const wallet = await tonConnectUI.connectWallet();
+
+    state.wallet = wallet.account.address;
+    save();
+    updateUI();
+
+    document.getElementById("walletPageText").textContent =
+      wallet.account.address.slice(0, 6) + "..." +
+      wallet.account.address.slice(-6);
+
+    showToast("Wallet connected successfully!");
+  } catch (e) {
+    showToast("Wallet connection cancelled.");
+  }
 }
 
 /* Price adapter:

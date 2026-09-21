@@ -474,16 +474,16 @@ function copyReferral(){
   manifestUrl: window.location.origin + "/tonconnect-manifest.json"
 });
 
-tonConnectUI.onStatusChange(wallet => {
+tonConnectUI.onStatusChange(async wallet => {
   const button = document.getElementById("walletButton");
   const text = document.getElementById("walletPageText");
 
   if (wallet) {
-    state.wallet = wallet.account.address;
+    const address = wallet.account.address;
+
+    state.wallet = address;
     save();
     updateUI();
-
-    const address = wallet.account.address;
 
     text.textContent =
       address.slice(0, 6) + "..." +
@@ -491,7 +491,39 @@ tonConnectUI.onStatusChange(wallet => {
 
     button.textContent = "DISCONNECT WALLET";
 
-    showToast("Wallet connected successfully!");
+    try {
+      const initData = tg?.initData || "";
+
+      if (!initData) {
+        showToast("Telegram authentication unavailable.");
+        return;
+      }
+
+      const response = await fetch("/api/wallet", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          initData,
+          walletAddress: address
+        })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        console.error("Wallet save error:", result);
+        showToast(result.error || "Could not save wallet");
+        return;
+      }
+
+      showToast("Wallet connected and saved!");
+    } catch (error) {
+      console.error("Wallet save connection error:", error);
+      showToast("Wallet connected, but could not save it.");
+    }
+
   } else {
     state.wallet = null;
     save();
@@ -501,6 +533,7 @@ tonConnectUI.onStatusChange(wallet => {
     button.textContent = "CONNECT WALLET";
   }
 });
+
 
 async function connectWallet() {
   try {

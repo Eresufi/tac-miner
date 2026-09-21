@@ -234,7 +234,11 @@ button{font:inherit}
 
 <section id="walletPage" class="page">
  <h2>Wallet</h2><div class="page-subtitle">Manage your TAC balance and wallet connection.</div>
- <div class="feature-card"><h3>TON Wallet</h3><p id="walletPageText">No wallet connected.</p><button class="feature-button" onclick="connectWallet()">CONNECT WALLET</button></div>
+<div class="feature-card">
+  <h3>TON Wallet</h3>
+  <p id="walletPageText">No wallet connected.</p>
+  <button id="walletButton" class="feature-button" onclick="connectWallet()">CONNECT WALLET</button>
+</div>
 </section>
 
 <nav class="bottom-nav">
@@ -473,19 +477,52 @@ const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
 
 async function connectWallet() {
   try {
-    const wallet = await tonConnectUI.connectWallet();
+    const tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+  manifestUrl: window.location.origin + "/tonconnect-manifest.json"
+});
 
+tonConnectUI.onStatusChange(wallet => {
+  const button = document.getElementById("walletButton");
+  const text = document.getElementById("walletPageText");
+
+  if (wallet) {
     state.wallet = wallet.account.address;
     save();
     updateUI();
 
-    document.getElementById("walletPageText").textContent =
-      wallet.account.address.slice(0, 6) + "..." +
-      wallet.account.address.slice(-6);
+    const address = wallet.account.address;
+
+    text.textContent =
+      address.slice(0, 6) + "..." +
+      address.slice(-6);
+
+    button.textContent = "DISCONNECT WALLET";
 
     showToast("Wallet connected successfully!");
+  } else {
+    state.wallet = null;
+    save();
+    updateUI();
+
+    text.textContent = "No wallet connected.";
+    button.textContent = "CONNECT WALLET";
+  }
+});
+
+async function connectWallet() {
+  try {
+    if (tonConnectUI.connected) {
+      await tonConnectUI.disconnect();
+      return;
+    }
+
+    await tonConnectUI.openModal();
+
   } catch (e) {
+    console.error("Wallet error:", e);
     showToast("Wallet connection cancelled.");
+  }
+}
   }
 }
 
